@@ -1,7 +1,6 @@
 import os
 from flask import Flask, request, redirect, url_for, render_template, send_from_directory
 from werkzeug.utils import secure_filename
-from PyPDF2 import PdfFileReader, PdfFileWriter
 import fitz
 
 UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/uploads/'
@@ -39,14 +38,14 @@ def index():
 
 
 def process_file(path, filename):
-    remove_watermark(path, filename)
+    fitz_function(path, filename)
     # with open(path, 'a') as f:
     #    f.write("\nAdded processed content")
 
 
-def remove_watermark(path, filename):
+def fitz_function(path, filename):
     doc = fitz.open(open(path, 'rb'))
-    output = PdfFileWriter()
+
     page = doc[0]
     text= 'arria'
     text_instances = page.searchFor(text, quads=True)
@@ -54,8 +53,6 @@ def remove_watermark(path, filename):
         highlight = page.addHighlightAnnot(inst)
         highlight.update()
 
-    #output_stream = open(app.config['DOWNLOAD_FOLDER'] + filename, 'wb')
-    #output.write(output_stream)
     doc.save(app.config['DOWNLOAD_FOLDER'] + filename)
 
 
